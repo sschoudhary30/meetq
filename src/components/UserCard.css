@@ -1,0 +1,92 @@
+
+.user-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 600px;
+    width: 430px;
+    position: relative;
+    left: 90px;
+    top: 150px;
+  }
+  
+  .profile-banner {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .banner-img {
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  .profile-pic-usercard {
+    margin-top: -50px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-pic-usercard img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .user-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    padding-left: 2rem;
+  }
+  
+  .bio {
+    font-size: 1rem;
+    color: #888;
+    text-align: left;
+    padding-left: 1rem;
+    padding-left: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .user-icons {
+    display: flex;
+    flex-direction: column; 
+    text-align: left;
+    padding-left: 2rem; 
+    margin-top: 40px;
+  }
+  
+  .icon-item {
+    color: #888;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+  
+  .icon-item:hover {
+    color: #333; 
+  }
+  
+  .icon-item.selected {
+    color: black; 
+  }
+  
+  .divider {
+    width: 100%;
+    height: 1px;
+    border: 2px solid #acacac; 
+    margin: 0;
+  }
+  
+  .divider.selected {
+    background-color: black; 
+  }
+  
