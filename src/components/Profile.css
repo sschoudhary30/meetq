@@ -1,0 +1,78 @@
+body{
+  background-color: #FAFBFF;
+}
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.left-sidebar,
+.right-sidebar {
+  width: 25%;
+}
+
+.main-content {
+  width: 50%;
+  padding: 20px;
+}
+
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-details h4 {
+  margin: 0;
+}
+
+.links p {
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.links p:hover {
+  text-decoration: underline;
+}
+
+.saved-posts-section,
+.my-posts-section,
+.posts-section {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.post-item {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  margin-bottom: 60px;
+  min-width: 582px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
