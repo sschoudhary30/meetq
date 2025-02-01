@@ -1,0 +1,5 @@
+client/node_modules
+server/node_modules
+client/.env
+server/.env
+server/utils/social-media-a5960-firebase-adminsdk-u04st-e8a2582344.json
