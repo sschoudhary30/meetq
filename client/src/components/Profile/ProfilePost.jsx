@@ -59,6 +59,7 @@ const ProfilePost = ({ post }) => {
 			});
 				  
 			const data = await response.json();
+			console.log(data);
 			if (data.success) {
 				await deleteDoc(doc(firestore, "posts", post.id));
 				await updateDoc(userRef, {

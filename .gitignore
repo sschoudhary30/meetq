@@ -25,3 +25,6 @@ dist-ssr
 
 client/.env
 client/node_modules
+server/node_modules
+server/.env
+server/utils/social-media-a5960-firebase-adminsdk-u04st-e8a2582344.json

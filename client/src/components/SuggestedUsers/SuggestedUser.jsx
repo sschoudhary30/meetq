@@ -34,7 +34,7 @@ const SuggestedUser = ({ user, setUser }) => {
 					</Box>
 				</VStack>
 			</Flex>
-			{authUser.uid !== user.uid && (
+			{(authUser.uid !== user.uid) && (
 				<Button
 					fontSize={13}
 					bg={"transparent"}
