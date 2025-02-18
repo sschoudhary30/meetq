@@ -231,7 +231,7 @@ router.post("/login-challenge-verify", async (req, res) => {
         if (!verificationResponse.verified) {
             return res.status(500).json({ success: false, message: "Failed to verify authentication." });
         }
-        return res.json({ success: true, message: "Authentication verified successfully." });
+        return res.json({ success: true, message: "Authentication verified successfully.", data: querySnapshot.docs[0].data() });
     } catch (error) {
         console.error("Error verifying authentication challenge:", error.message);
         return res.status(500).json({ success: false, message: "Failed to verify challenge.", error: error.message });

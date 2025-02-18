@@ -18,7 +18,7 @@ const useSignUpWithEmailAndPassword = () => {
 	};
 
 	const signup = async (inputs) => {
-
+		isLoading(true)
 		try {
 			if (!inputs.username || !inputs.password) {
 				showToast("Error", "Please fill all the fields", "error");
@@ -52,7 +52,6 @@ const useSignUpWithEmailAndPassword = () => {
 
 			if (inputs.tagAccount !== "") {
 				// fan page handling
-				isLoading(true);
 				const uid = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 				const fan_data = {
 					username: inputs.username,
@@ -75,7 +74,6 @@ const useSignUpWithEmailAndPassword = () => {
 				userDoc.tagAccount = tagUID;
 			} else {
 				// personal page handling
-				isLoading(true)
 				if (!inputs.fullName) {
 					showToast("Error", "Please fill all the fields", "error");
 					return;

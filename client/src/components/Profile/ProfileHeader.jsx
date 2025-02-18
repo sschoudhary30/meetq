@@ -5,6 +5,7 @@ import useAuthStore from "../../store/authStore";
 import EditProfile from "./EditProfile";
 import useFollowUser from "../../hooks/useFollowUser";
 import { startRegistration } from "@simplewebauthn/browser";
+import useShowToast from "../../hooks/useShowToast";
 
 const ProfileHeader = () => {
 	const { userProfile } = useUserProfileStore();
@@ -12,6 +13,7 @@ const ProfileHeader = () => {
 	const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
 	const { isFollowing, isUpdating, handleFollowUser } = useFollowUser(userProfile?.uid);
 	const [loading, setLoading] = useState(false);
+	const showToast = useShowToast();
 
 	const visitingOwnProfileAndAuth = authUser && authUser.username === userProfile.username;
 	const visitingAnotherProfileAndAuth = authUser && authUser.username !== userProfile.username;
@@ -40,10 +42,10 @@ const ProfileHeader = () => {
 				body: JSON.stringify({ username: authUser.username, credentials: registrationResponse, accountType: userProfile.accountType }),
 			});
 
-			alert("Passkey registration successful!");
+			showToast("Success","Passkey registration successful!","success");
 		} catch (error) {
 			console.error(error);
-			alert("Passkey registration failed.");
+			showToast("Error","Passkey registration failed.","error");
 		} finally {
 			setLoading(false);
 		}

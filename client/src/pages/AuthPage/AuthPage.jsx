@@ -12,7 +12,7 @@ const AuthPage = () => {
 					</Box>
 
 					{/* Right hand-side */}
-					<VStack spacing={4} align={"stretch"}>
+					<VStack w="40%" spacing={4} align={"stretch"}>
 						<AuthForm />
 						{/*<Box textAlign={"center"}>Get the app.</Box>
 						<Flex gap={5} justifyContent={"center"}>
