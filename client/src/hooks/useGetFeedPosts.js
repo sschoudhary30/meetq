@@ -1,48 +1,50 @@
-import { useEffect, useState } from "react";
-import usePostStore from "../store/postStore";
-import useAuthStore from "../store/authStore";
-import useShowToast from "./useShowToast";
-import useUserProfileStore from "../store/userProfileStore";
+import { useState, useEffect } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../firebase/firebase";
+import useAuthStore from "../store/authStore";
 
 const useGetFeedPosts = () => {
-	const [isLoading, setIsLoading] = useState(true);
-	const { posts, setPosts } = usePostStore();
-	const authUser = useAuthStore((state) => state.user);
-	const showToast = useShowToast();
-	const { setUserProfile } = useUserProfileStore();
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useAuthStore();
 
-	useEffect(() => {
-		const getFeedPosts = async () => {
-			setIsLoading(true);
-			if (authUser.following.length === 0) {
-				setIsLoading(false);
-				setPosts([]);
-				return;
-			}
-			const q = query(collection(firestore, "posts"), where("createdBy", "in", authUser.following));
-			try {
-				const querySnapshot = await getDocs(q);
-				const feedPosts = [];
+  useEffect(() => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
 
-				querySnapshot.forEach((doc) => {
-					feedPosts.push({ id: doc.id, ...doc.data() });
-				});
+    const fetchPosts = async () => {
+      try {
+        //console.log("Fetching posts from followed users...");
 
-				feedPosts.sort((a, b) => b.createdAt - a.createdAt);
-				setPosts(feedPosts);
-			} catch (error) {
-				showToast("Error", error.message, "error");
-			} finally {
-				setIsLoading(false);
-			}
-		};
+        const postsRef = collection(firestore, "posts");
+        const q = query(postsRef, where("createdBy", "in", user.following || []));
+        const snapshot = await getDocs(q);
 
-		if (authUser) getFeedPosts();
-	}, [authUser, showToast, setPosts, setUserProfile]);
+        const fetchedPosts = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-	return { isLoading, posts };
+        //console.log("Fetched Feed Posts:", fetchedPosts);
+
+        setPosts(fetchedPosts);
+      } catch (err) {
+        //console.error("Error fetching feed posts:", err);
+        setError("Failed to load posts.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [user]);
+
+  return { posts, isLoading, error };
 };
 
 export default useGetFeedPosts;
+
+

@@ -1,46 +1,44 @@
-import { useEffect, useState } from "react";
-import useAuthStore from "../store/authStore";
-import useShowToast from "./useShowToast";
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../firebase/firebase";
+import useAuthStore from "../store/authStore";
 
 const useGetSuggestedUsers = () => {
-	const [isLoading, setIsLoading] = useState(true);
-	const [suggestedUsers, setSuggestedUsers] = useState([]);
-	const authUser = useAuthStore((state) => state.user);
-	const showToast = useShowToast();
+  const [suggestedUsers, setSuggestedUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuthStore();
 
-	useEffect(() => {
-		const getSuggestedUsers = async () => {
-			setIsLoading(true);
-			try {
-				const usersRef = collection(firestore, "users");
-				const q = query(
-					usersRef,
-					where("uid", "not-in", [authUser.uid, ...authUser.following]),
-					orderBy("uid"),
-					limit(3)
-				);
+  useEffect(() => {
+    if (!user) return;
 
-				const querySnapshot = await getDocs(q);
-				const users = [];
+    const fetchSuggestedUsers = async () => {
+      try {
+        setIsLoading(true);
+        const usersQuery = query(collection(firestore, "users"));
+        const snapshot = await getDocs(usersQuery);
 
-				querySnapshot.forEach((doc) => {
-					users.push({ ...doc.data(), id: doc.id });
-				});
+        const usersList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-				setSuggestedUsers(users);
-			} catch (error) {
-				showToast("Error", error.message, "error");
-			} finally {
-				setIsLoading(false);
-			}
-		};
+        const filteredUsers = usersList.filter(
+          (u) => !user.following.includes(u.uid) && u.uid !== user.uid
+        );
 
-		if (authUser) getSuggestedUsers();
-	}, [authUser, showToast]);
+        setSuggestedUsers(filteredUsers);
+      } catch (error) {
+        console.error("Error fetching suggested users:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-	return { isLoading, suggestedUsers };
+    fetchSuggestedUsers();
+  }, [user.following]);
+
+  return { suggestedUsers, isLoading };
 };
 
 export default useGetSuggestedUsers;
+

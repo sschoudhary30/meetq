@@ -1,5 +1,6 @@
 import {
 	Avatar,
+	Box,
 	Button,
 	Divider,
 	Flex,
@@ -12,20 +13,24 @@ import {
 	ModalOverlay,
 	Text,
 	VStack,
+	Menu,
+	MenuButton,
+	MenuItem,
+	MenuList,
 	useDisclosure,
 } from "@chakra-ui/react";
 import { AiFillHeart } from "react-icons/ai";
 import { FaComment } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineReport } from "react-icons/md";
 import Comment from "../Comment/Comment";
 import PostFooter from "../FeedPosts/PostFooter";
 import useUserProfileStore from "../../store/userProfileStore";
 import useAuthStore from "../../store/authStore";
 import useShowToast from "../../hooks/useShowToast";
+import useReportPost from "../../hooks/useReportPost";
 import { useState } from "react";
-//import { deleteObject, ref } from "firebase/storage";
-import { firestore, storage } from "../../firebase/firebase";
-import { arrayRemove, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
+import { firestore } from "../../firebase/firebase";
+import { arrayRemove, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import usePostStore from "../../store/postStore";
 import Caption from "../Comment/Caption";
 
@@ -34,6 +39,7 @@ const ProfilePost = ({ post }) => {
 	const userProfile = useUserProfileStore((state) => state.userProfile);
 	const authUser = useAuthStore((state) => state.user);
 	const showToast = useShowToast();
+	const reportPost = useReportPost();
 	const [isDeleting, setIsDeleting] = useState(false);
 	const deletePost = usePostStore((state) => state.deletePost);
 	const decrementPostsCount = useUserProfileStore((state) => state.deletePost);
@@ -43,35 +49,26 @@ const ProfilePost = ({ post }) => {
 		if (isDeleting) return;
 
 		try {
+			setIsDeleting(true);
 			const userRef = doc(firestore, "users", authUser.uid);
-			//using firebase
-			//const imageRef = ref(storage, `posts/${post.id}`);
-			//await deleteObject(imageRef);
-			//using cloudinary
-			const arrayUrl = post.imageURL.split('/');
-			const publicId = `feed/${arrayUrl[arrayUrl.length - 1].split('.')[0]}`
-			const response = await fetch(`http://localhost:3000/delete-image/${authUser.username}`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					},
-				body: JSON.stringify({ publicId }),
+
+			await deleteDoc(doc(firestore, "posts", post.id));
+			await updateDoc(userRef, {
+				posts: arrayRemove(post.id),
 			});
-				  
-			const data = await response.json();
-			if (data.success) {
-				await deleteDoc(doc(firestore, "posts", post.id));
-				await updateDoc(userRef, {
-					posts: arrayRemove(post.id),
-			});
+
 			deletePost(post.id);
 			decrementPostsCount(post.id);
-			showToast("Success", "Post deleted successfully", "success");}
+			showToast("Success", "Post deleted successfully", "success");
 		} catch (error) {
 			showToast("Error", error.message, "error");
 		} finally {
 			setIsDeleting(false);
 		}
+	};
+
+	const handleReport = (reason) => {
+		reportPost(post.id, reason);
 	};
 
 	return (
@@ -94,7 +91,7 @@ const ProfilePost = ({ post }) => {
 					left={0}
 					right={0}
 					bottom={0}
-					bg={"blackAlpha.700"}
+					bg={"whiteAlpha"}
 					transition={"all 0.3s ease"}
 					zIndex={1}
 					justifyContent={"center"}
@@ -123,14 +120,8 @@ const ProfilePost = ({ post }) => {
 				<ModalOverlay />
 				<ModalContent>
 					<ModalCloseButton />
-					<ModalBody bg={"black"} pb={5}>
-						<Flex
-							gap='4'
-							w={{ base: "90%", sm: "70%", md: "full" }}
-							mx={"auto"}
-							maxH={"90vh"}
-							minH={"50vh"}
-						>
+					<ModalBody bg={"white"} pb={5}>
+						<Flex gap='4' w={{ base: "90%", sm: "70%", md: "full" }} mx={"auto"} maxH={"90vh"} minH={"50vh"}>
 							<Flex
 								borderRadius={4}
 								overflow={"hidden"}
@@ -142,39 +133,60 @@ const ProfilePost = ({ post }) => {
 							>
 								<Image src={post.imageURL} alt='profile post' />
 							</Flex>
+
 							<Flex flex={1} flexDir={"column"} px={10} display={{ base: "none", md: "flex" }}>
 								<Flex alignItems={"center"} justifyContent={"space-between"}>
 									<Flex alignItems={"center"} gap={4}>
-										<Avatar src={userProfile.profilePicURL} size={"sm"} name='As a Programmer' />
+										<Avatar src={userProfile.profilePicURL} size={"sm"} name='User' />
 										<Text fontWeight={"bold"} fontSize={12}>
 											{userProfile.username}
 										</Text>
 									</Flex>
 
-									{authUser?.uid === userProfile.uid && (
-										<Button
-											size={"sm"}
-											bg={"transparent"}
-											_hover={{ bg: "whiteAlpha.300", color: "red.600" }}
-											borderRadius={4}
-											p={1}
-											onClick={handleDeletePost}
-											isLoading={isDeleting}
-										>
-											<MdDelete size={20} cursor='pointer' />
-										</Button>
-									)}
+									<Flex gap={2}>
+										{authUser?.uid === userProfile.uid && (
+											<Button
+												size={"sm"}
+												bg={"transparent"}
+												_hover={{ bg: "whiteAlpha.300", color: "red.600" }}
+												borderRadius={4}
+												p={1}
+												onClick={handleDeletePost}
+												isLoading={isDeleting}
+											>
+												<MdDelete size={20} cursor='pointer' />
+											</Button>
+										)}
+
+										<Menu>
+											<MenuButton
+												as={Button}
+												size={"sm"}
+												bg={"transparent"}
+												_hover={{ bg: "whiteAlpha.300", color: "red.600" }}
+												borderRadius={4}
+												p={1}
+											>
+												<MdOutlineReport size={20} cursor='pointer' />
+											</MenuButton>
+											<MenuList>
+												<MenuItem onClick={() => handleReport("Inappropriate Content")}>Inappropriate Content</MenuItem>
+												<MenuItem onClick={() => handleReport("Spam or Misleading")}>Spam or Misleading</MenuItem>
+												<MenuItem onClick={() => handleReport("Hate Speech or Abuse")}>Hate Speech or Abuse</MenuItem>
+											</MenuList>
+										</Menu>
+									</Flex>
 								</Flex>
+
 								<Divider my={4} bg={"gray.500"} />
 
-								<VStack w='full' alignItems={"start"} maxH={"350px"} overflowY={"auto"}>
-									{/* CAPTION */}
+								<VStack w='full' alignItems={"start"} maxH={'350px'} overflowY={'auto'}>
 									{post.caption && <Caption post={post} />}
-									{/* COMMENTS */}
 									{post.comments.map((comment) => (
 										<Comment key={comment.id} comment={comment} />
 									))}
 								</VStack>
+
 								<Divider my={4} bg={"gray.8000"} />
 
 								<PostFooter isProfilePage={true} post={post} />

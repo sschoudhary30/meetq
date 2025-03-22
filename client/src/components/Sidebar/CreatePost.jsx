@@ -37,6 +37,8 @@ const CreatePost = () => {
 	const showToast = useShowToast();
 	const { isLoading, handleCreatePost } = useCreatePost();
 
+	
+	  
 	const handlePostCreation = async () => {
 		try {
 			await handleCreatePost(selectedFile, caption);
@@ -76,13 +78,16 @@ const CreatePost = () => {
 			<Modal isOpen={isOpen} onClose={onClose} size='xl'>
 				<ModalOverlay />
 
-				<ModalContent bg={"black"} border={"1px solid gray"}>
+				<ModalContent bg={"white"} border={"1px solid gray"}>
 					<ModalHeader>Create Post</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody pb={6}>
-						<Textarea
+						<Textarea 
+							
 							placeholder='Post caption...'
+							color={"black"}
 							value={caption}
+							border={"1px solid black"}
 							onChange={(e) => setCaption(e.target.value)}
 						/>
 
@@ -109,7 +114,7 @@ const CreatePost = () => {
 					</ModalBody>
 
 					<ModalFooter>
-						<Button mr={3} onClick={handlePostCreation} isLoading={isLoading}>
+						<Button mr={3} onClick={handlePostCreation} bg={"black"} isLoading={isLoading}>
 							Post
 						</Button>
 					</ModalFooter>
@@ -187,64 +192,4 @@ function useCreatePost() {
 	};
 
 	return { isLoading, handleCreatePost };
-}
-
-// 1- COPY AND PASTE AS THE STARTER CODE FOR THE CRAETEPOST COMPONENT
-// import { Box, Flex, Tooltip } from "@chakra-ui/react";
-// import { CreatePostLogo } from "../../assets/constants";
-
-// const CreatePost = () => {
-// 	return (
-// 		<>
-// 			<Tooltip
-// 				hasArrow
-// 				label={"Create"}
-// 				placement='right'
-// 				ml={1}
-// 				openDelay={500}
-// 				display={{ base: "block", md: "none" }}
-// 			>
-// 				<Flex
-// 					alignItems={"center"}
-// 					gap={4}
-// 					_hover={{ bg: "whiteAlpha.400" }}
-// 					borderRadius={6}
-// 					p={2}
-// 					w={{ base: 10, md: "full" }}
-// 					justifyContent={{ base: "center", md: "flex-start" }}
-// 				>
-// 					<CreatePostLogo />
-// 					<Box display={{ base: "none", md: "block" }}>Create</Box>
-// 				</Flex>
-// 			</Tooltip>
-// 		</>
-// 	);
-// };
-
-// export default CreatePost;
-
-// 2-COPY AND PASTE FOR THE MODAL
-{
-	/* <Modal isOpen={isOpen} onClose={onClose} size='xl'>
-				<ModalOverlay />
-
-				<ModalContent bg={"black"} border={"1px solid gray"}>
-					<ModalHeader>Create Post</ModalHeader>
-					<ModalCloseButton />
-					<ModalBody pb={6}>
-						<Textarea placeholder='Post caption...' />
-
-						<Input type='file' hidden />
-
-						<BsFillImageFill
-							style={{ marginTop: "15px", marginLeft: "5px", cursor: "pointer" }}
-							size={16}
-						/>
-					</ModalBody>
-
-					<ModalFooter>
-						<Button mr={3}>Post</Button>
-					</ModalFooter>
-				</ModalContent>
-			</Modal> */
 }

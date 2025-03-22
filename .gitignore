@@ -25,3 +25,4 @@ dist-ssr
 
 client/.env
 client/node_modules
+firebase_config.json
